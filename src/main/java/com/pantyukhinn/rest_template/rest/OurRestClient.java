@@ -13,12 +13,17 @@ public class OurRestClient {
     private final String URL = "http://94.198.50.185:7081/api/users";
     private HttpHeaders headers;
 
+    public OurRestClient() {
+        getHeaders();
+    }
+
     private HttpEntity<User> getHttpEntity(User user) {
         return new HttpEntity<>(user, headers);
     }
 
-    public void getHeaders() {
-        String sessionId = template.headForHeaders(URL).getFirst("Set-Cookie").split(";")[0];
+    private void getHeaders() {
+        String sessionId = Objects.requireNonNull(template.headForHeaders(URL)
+                                                          .getFirst("Set-Cookie")).split(";")[0];
         HttpHeaders head =  new HttpHeaders();
         head.setContentType(MediaType.APPLICATION_JSON);
         head.add("Cookie", sessionId);
@@ -29,7 +34,6 @@ public class OurRestClient {
         return Arrays.stream(Objects.requireNonNull(template.getForObject(URL, User[].class, headers)))
                                      .toList();
     }
-
 
     public String saveUser(User user) {
         return template.exchange(URL, HttpMethod.POST, getHttpEntity(user), String.class).getBody();
@@ -46,7 +50,6 @@ public class OurRestClient {
 
     public static void main(String[] args) {
         OurRestClient client = new OurRestClient();
-        client.getHeaders();
 
         List<User> list = client.getAllUsers();
         list.forEach(System.out::println);
@@ -62,7 +65,6 @@ public class OurRestClient {
         String finishStr = saveUserResponse + updateUserResponse + deleteUserResponse;
 
         System.out.println("Конечная строка = " + finishStr);
-
         System.out.println("Длинна конечной строки = " + finishStr.length());
     }
 }
