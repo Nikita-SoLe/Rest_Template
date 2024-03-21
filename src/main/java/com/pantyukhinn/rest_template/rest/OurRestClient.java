@@ -17,7 +17,7 @@ public class OurRestClient {
         return new HttpEntity<>(user, headers);
     }
 
-    private void getHeaders() {
+    public void getHeaders() {
         String sessionId = template.headForHeaders(URL).getFirst("Set-Cookie").split(";")[0];
         HttpHeaders head =  new HttpHeaders();
         head.setContentType(MediaType.APPLICATION_JSON);
